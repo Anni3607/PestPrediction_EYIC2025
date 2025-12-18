@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import re
 
 # -----------------------------
 # App Configuration
@@ -12,15 +13,37 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Load Location Data
+# Load CSV safely
 # -----------------------------
 BASE_DIR = os.path.dirname(__file__)
 CSV_PATH = os.path.join(BASE_DIR, "locations.csv")
 
-locations = pd.read_csv(CSV_PATH)
+locations = pd.read_csv(
+    CSV_PATH,
+    encoding="utf-8-sig",   # 🔥 removes BOM
+    sep=","
+)
 
-# Normalize column names (safety)
-locations.columns = locations.columns.str.strip().str.lower()
+# -----------------------------
+# HARD CLEAN column names
+# -----------------------------
+locations.columns = (
+    locations.columns
+    .str.replace(r"[^\w]", "", regex=True)  # remove hidden chars
+    .str.lower()
+)
+
+# -----------------------------
+# REQUIRED CHECK
+# -----------------------------
+required = {"district", "taluka", "village", "lat", "lon"}
+missing = required - set(locations.columns)
+
+if missing:
+    st.error("❌ CSV column mismatch")
+    st.write("Found columns:", list(locations.columns))
+    st.write("Missing columns:", list(missing))
+    st.stop()
 
 # -----------------------------
 # Header
@@ -39,9 +62,8 @@ st.divider()
 with st.expander("ℹ️ How this system works"):
     st.write("""
     - Pest risk is predicted at **village level**
-    - All farms in the same village receive the same alert
-    - Uses **weather and satellite-derived indicators**
-    - Provides **early-warning risk**, not pest detection
+    - Same alert for all farms in a village
+    - Uses weather & satellite indicators
     """)
 
 # -----------------------------
@@ -62,7 +84,9 @@ district = st.selectbox(
 
 taluka = st.selectbox(
     "Taluka",
-    sorted(locations[locations["district"] == district]["taluka"].unique())
+    sorted(
+        locations[locations["district"] == district]["taluka"].unique()
+    )
 )
 
 village = st.selectbox(
@@ -84,7 +108,7 @@ loc_row = locations[
 lat, lon = loc_row["lat"], loc_row["lon"]
 
 # -----------------------------
-# Phone Number
+# Phone
 # -----------------------------
 st.subheader("3️⃣ SMS Alert (Optional)")
 phone = st.text_input("Mobile Number", placeholder="10-digit number")
@@ -102,14 +126,14 @@ if st.button("🔍 Check Pest Risk", use_container_width=True):
     st.divider()
 
     if pest_risk == 0:
-        st.success("✅ No significant pest risk detected in your village.")
+        st.success("✅ No significant pest risk detected.")
     else:
-        st.error("⚠️ Pest risk detected in your village.")
+        st.error("⚠️ Pest risk detected.")
         st.markdown("""
         **Recommended actions:**
         - Monitor crop closely  
-        - Use Integrated Pest Management (IPM)  
-        - Avoid unnecessary chemical spraying  
+        - Follow IPM practices  
+        - Avoid unnecessary spraying  
         """)
 
         if phone.strip():
