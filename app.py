@@ -12,35 +12,37 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Load CSV (BOM-safe)
+# Load CSV (FORCED PARSING)
 # -----------------------------
 BASE_DIR = os.path.dirname(__file__)
 CSV_PATH = os.path.join(BASE_DIR, "locations.csv")
 
 locations = pd.read_csv(
     CSV_PATH,
-    encoding="utf-8-sig"  # removes BOM safely
+    sep=",",                 # 🔥 FORCE delimiter
+    engine="python",         # 🔥 FORCE parser
+    encoding="utf-8-sig"
 )
 
 # -----------------------------
-# Clean column names (SAFE)
+# SAFETY: If still collapsed, split manually
 # -----------------------------
-locations.columns = (
-    locations.columns
-    .str.strip()     # remove spaces
-    .str.lower()     # lowercase only
-)
+if len(locations.columns) == 1:
+    locations = locations.iloc[:, 0].str.split(",", expand=True)
+    locations.columns = ["state", "district", "taluka", "village", "lat", "lon"]
 
 # -----------------------------
-# Validate columns
+# Normalize columns
+# -----------------------------
+locations.columns = locations.columns.str.strip().str.lower()
+
+# -----------------------------
+# Validate schema
 # -----------------------------
 required = {"district", "taluka", "village", "lat", "lon"}
-missing = required - set(locations.columns)
-
-if missing:
-    st.error("❌ CSV column mismatch")
-    st.write("Found columns:", list(locations.columns))
-    st.write("Missing columns:", list(missing))
+if not required.issubset(locations.columns):
+    st.error("❌ locations.csv could not be parsed correctly")
+    st.write("Columns detected:", list(locations.columns))
     st.stop()
 
 # -----------------------------
@@ -104,7 +106,7 @@ loc_row = locations[
     (locations["village"] == village)
 ].iloc[0]
 
-lat, lon = loc_row["lat"], loc_row["lon"]
+lat, lon = float(loc_row["lat"]), float(loc_row["lon"])
 
 # -----------------------------
 # Phone
