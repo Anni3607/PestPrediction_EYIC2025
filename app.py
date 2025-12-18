@@ -14,17 +14,14 @@ st.set_page_config(
 )
 
 # =====================================================
-# Load Location Data (CSV)
+# Load Location Data
 # =====================================================
 BASE_DIR = os.path.dirname(__file__)
 CSV_PATH = os.path.join(BASE_DIR, "locations.csv")
 
 locations = pd.read_csv(CSV_PATH, encoding="utf-8-sig")
-
-# Clean column names
 locations.columns = locations.columns.str.strip().str.lower()
 
-# Validate schema
 required_cols = {"district", "taluka", "village", "lat", "lon"}
 if not required_cols.issubset(locations.columns):
     st.error("❌ locations.csv schema mismatch")
@@ -43,12 +40,12 @@ def load_models():
 rice_model, cotton_model = load_models()
 
 # =====================================================
-# Feature Generator (Simulated but Consistent)
+# Feature Generator (Simulated Environment)
 # =====================================================
 def generate_features(lat, lon):
     """
-    Simulate environmental features based on location.
-    This mimics weather + satellite variability.
+    Simulate environmental features using location-based variability.
+    Feature order must match model training.
     """
     seed = int(abs(lat * lon) * 1000) % 10000
     np.random.seed(seed)
@@ -58,7 +55,6 @@ def generate_features(lat, lon):
     humidity = np.random.uniform(45, 90)       # %
     ndvi = np.random.uniform(0.25, 0.85)       # vegetation index
 
-    # ⚠️ FEATURE ORDER MUST MATCH TRAINING
     return np.array([[rainfall, temperature, humidity, ndvi]])
 
 # =====================================================
@@ -79,7 +75,7 @@ with st.expander("ℹ️ How this system works"):
     st.markdown("""
     - Risk is predicted at **village level**
     - ML models trained on historical pest & climate data
-    - Current prototype simulates environmental inputs
+    - Environmental inputs are simulated for prototype
     - In production, live weather & satellite data will be used
     """)
 
@@ -94,21 +90,27 @@ crop = st.radio("Choose your crop", ["Rice", "Cotton"], horizontal=True)
 # =====================================================
 st.subheader("2️⃣ Select Your Village")
 
-districts = sorted(locations["district"].unique())
-district = st.selectbox("District", districts)
-
-talukas = sorted(
-    locations[locations["district"] == district]["taluka"].unique()
+district = st.selectbox(
+    "District",
+    sorted(locations["district"].unique())
 )
-taluka = st.selectbox("Taluka", talukas)
 
-villages = sorted(
-    locations[
-        (locations["district"] == district) &
-        (locations["taluka"] == taluka)
-    ]["village"].unique()
+taluka = st.selectbox(
+    "Taluka",
+    sorted(
+        locations[locations["district"] == district]["taluka"].unique()
+    )
 )
-village = st.selectbox("Village", villages)
+
+village = st.selectbox(
+    "Village",
+    sorted(
+        locations[
+            (locations["district"] == district) &
+            (locations["taluka"] == taluka)
+        ]["village"].unique()
+    )
+)
 
 loc_row = locations[
     (locations["district"] == district) &
@@ -138,10 +140,26 @@ if st.button("🔍 Check Pest Risk", use_container_width=True):
 
         features = generate_features(lat, lon)
 
+        # -----------------------------
+        # Rice Model (XGBoost)
+        # -----------------------------
         if crop == "Rice":
             prob = rice_model.predict_proba(features)[0][1]
+
+        # -----------------------------
+        # Cotton Model (Robust Handling)
+        # -----------------------------
         else:
-            prob = cotton_model.predict_proba(features)[0][1]
+            if hasattr(cotton_model, "predict_proba"):
+                prob = cotton_model.predict_proba(features)[0][1]
+
+            elif hasattr(cotton_model, "decision_function"):
+                score = cotton_model.decision_function(features)[0]
+                prob = 1 / (1 + np.exp(-score))  # sigmoid
+
+            else:
+                pred = cotton_model.predict(features)[0]
+                prob = float(pred)
 
         THRESHOLD = 0.35
         pest_risk = int(prob >= THRESHOLD)
