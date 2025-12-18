@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-import re
 
 # -----------------------------
 # App Configuration
@@ -13,28 +12,27 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Load CSV safely
+# Load CSV (BOM-safe)
 # -----------------------------
 BASE_DIR = os.path.dirname(__file__)
 CSV_PATH = os.path.join(BASE_DIR, "locations.csv")
 
 locations = pd.read_csv(
     CSV_PATH,
-    encoding="utf-8-sig",   # 🔥 removes BOM
-    sep=","
+    encoding="utf-8-sig"  # removes BOM safely
 )
 
 # -----------------------------
-# HARD CLEAN column names
+# Clean column names (SAFE)
 # -----------------------------
 locations.columns = (
     locations.columns
-    .str.replace(r"[^\w]", "", regex=True)  # remove hidden chars
-    .str.lower()
+    .str.strip()     # remove spaces
+    .str.lower()     # lowercase only
 )
 
 # -----------------------------
-# REQUIRED CHECK
+# Validate columns
 # -----------------------------
 required = {"district", "taluka", "village", "lat", "lon"}
 missing = required - set(locations.columns)
@@ -62,8 +60,9 @@ st.divider()
 with st.expander("ℹ️ How this system works"):
     st.write("""
     - Pest risk is predicted at **village level**
-    - Same alert for all farms in a village
-    - Uses weather & satellite indicators
+    - All farms in the same village receive the same alert
+    - Uses weather and satellite indicators
+    - Preventive, not diagnostic
     """)
 
 # -----------------------------
@@ -132,7 +131,7 @@ if st.button("🔍 Check Pest Risk", use_container_width=True):
         st.markdown("""
         **Recommended actions:**
         - Monitor crop closely  
-        - Follow IPM practices  
+        - Use IPM practices  
         - Avoid unnecessary spraying  
         """)
 
