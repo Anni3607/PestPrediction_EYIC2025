@@ -76,30 +76,34 @@ crop = st.radio("Choose your crop", ["Rice", "Cotton"], horizontal=True)
 # -----------------------------
 # Location Selection
 # -----------------------------
+# -----------------------------
+# -----------------------------
 st.subheader("2️⃣ Select Your Village")
 
-district = st.selectbox(
-    "District",
-    sorted(locations["district"].unique())
-)
+# District
+districts = sorted(locations["district"].dropna().unique())
+district = st.selectbox("District", districts)
 
-taluka = st.selectbox(
-    "Taluka",
-    sorted(
-        locations[locations["district"] == district]["taluka"].unique()
-    )
+# Taluka (filtered by district)
+talukas = (
+    locations[locations["district"] == district]["taluka"]
+    .dropna()
+    .unique()
 )
+taluka = st.selectbox("Taluka", sorted(talukas))
 
-village = st.selectbox(
-    "Village",
-    sorted(
-        locations[
-            (locations["district"] == district) &
-            (locations["taluka"] == taluka)
-        ]["village"].unique()
-    )
+# Village (filtered by district + taluka)
+villages = (
+    locations[
+        (locations["district"] == district) &
+        (locations["taluka"] == taluka)
+    ]["village"]
+    .dropna()
+    .unique()
 )
+village = st.selectbox("Village", sorted(villages))
 
+# Get selected row
 loc_row = locations[
     (locations["district"] == district) &
     (locations["taluka"] == taluka) &
