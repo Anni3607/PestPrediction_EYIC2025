@@ -1,7 +1,35 @@
-"state,district,taluka,village,lat,lon"
-"Maharashtra,Akola,Akola,Akola,20.7002,77.0082"
-"Maharashtra,Akola,Akot,Akot,21.0969,77.0586"
-"Maharashtra,Jalna,Jalna,Jalna,19.8347,75.8816"
-"Maharashtra,Jalna,Ambad,Ambad,19.6136,75.7895"
-"Maharashtra,Pune,Baramati,Baramati,18.1511,74.5777"
-"Maharashtra,Pune,Haveli,Wagholi,18.5793,73.9780"
+state,district,taluka,village,lat,lon
+Maharashtra,Akola,Akola,Akola City,20.7050,77.0050
+Maharashtra,Akola,Akola,Ridhora,20.7352,77.0321
+Maharashtra,Akola,Akola,Morgaon Bhende,20.6904,76.9823
+Maharashtra,Akola,Akot,Akot City,21.0950,77.0580
+Maharashtra,Akola,Akot,Palsi,21.1123,77.0214
+Maharashtra,Akola,Akot,Hiwarkhed,21.0827,77.0846
+
+Maharashtra,Jalna,Jalna,Jalna City,19.8350,75.8800
+Maharashtra,Jalna,Jalna,Revgaon,19.8624,75.9027
+Maharashtra,Jalna,Jalna,Ghansawangi,19.7842,75.8461
+Maharashtra,Jalna,Ambad,Ambad City,19.6130,75.7900
+Maharashtra,Jalna,Ambad,Tadkalas,19.6425,75.8234
+Maharashtra,Jalna,Ambad,Badnapur,19.7601,75.7219
+
+Maharashtra,Pune,Baramati,Baramati City,18.1510,74.5770
+Maharashtra,Pune,Baramati,Malad,18.1794,74.6012
+Maharashtra,Pune,Baramati,Katewadi,18.1308,74.5523
+Maharashtra,Pune,Haveli,Wagholi,18.5793,73.9780
+Maharashtra,Pune,Haveli,Lohegaon,18.5996,73.9330
+Maharashtra,Pune,Haveli,Mundhwa,18.5334,73.9307
+
+Maharashtra,Nagpur,Hingna,Hingna,21.0895,78.9654
+Maharashtra,Nagpur,Hingna,Kanholibara,21.0567,78.9992
+Maharashtra,Nagpur,Hingna,Raipur,21.1121,78.9428
+Maharashtra,Nagpur,Kalmeshwar,Kalmeshwar,21.2354,78.9093
+Maharashtra,Nagpur,Kalmeshwar,Sawangi,21.2148,78.8806
+Maharashtra,Nagpur,Kalmeshwar,Koradi,21.2476,78.9971
+
+Maharashtra,Nashik,Nashik,Nashik City,19.9975,73.7898
+Maharashtra,Nashik,Nashik,Trimbakeshwar,19.9400,73.5300
+Maharashtra,Nashik,Nashik,Deolali,19.9448,73.8346
+Maharashtra,Nashik,Sinnar,Sinnar City,19.8466,74.0015
+Maharashtra,Nashik,Sinnar,Deshwandi,19.8724,74.0328
+Maharashtra,Nashik,Sinnar,Musalgavhan,19.8209,73.9784
