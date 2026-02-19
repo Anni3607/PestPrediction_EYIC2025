@@ -1,7 +1,8 @@
- Pest Risk Prediction & IPM Recommendation System
-EYIC Innovation Challenge Project
+**Pest Risk Prediction & IPM Recommendation System**
 
- Overview
+*EYIC Innovation Challenge Project*
+
+ Overview :
 This project was developed for the EYIC Innovation Challenge to address a real agricultural problem: delayed pest detection and inefficient pest management decisions.
 The system predicts pest risk using machine learning and provides rule-based Integrated Pest Management (IPM) recommendations, focusing not only on accuracy but also on interpretability and practical decision support.
 
