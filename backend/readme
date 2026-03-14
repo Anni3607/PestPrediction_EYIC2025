@@ -1,1 +1,53 @@
+# Pest Risk Prediction Backend
 
+This directory contains the backend service for the Pest Risk Prediction and Integrated Pest Management (IPM) Recommendation System developed for the EYIC Innovation Challenge.
+
+The backend is responsible for loading trained machine learning models and providing pest risk predictions to the frontend dashboard through an API.
+
+## Overview
+
+The backend receives environmental and crop-related input data from the frontend application, processes the input, and generates pest risk predictions using trained machine learning models.
+
+The system currently supports prediction for crops such as cotton and rice. Based on the model output, the backend returns a pest risk score that can be used by the dashboard to display risk levels and recommendations.
+
+## Files
+
+main.py  
+Main API service that loads the trained models and exposes endpoints for prediction requests.
+
+__pycache__/  
+Automatically generated Python cache files.
+
+## Functionality
+
+The backend performs the following tasks:
+
+1. Loads trained machine learning models stored as serialized files.
+2. Accepts input data such as environmental parameters and crop conditions.
+3. Processes the input features.
+4. Runs the machine learning model to estimate pest risk.
+5. Returns prediction results to the frontend application.
+
+## Technologies Used
+
+Python  
+FastAPI / Flask (depending on implementation in main.py)  
+Scikit-learn  
+XGBoost  
+Joblib / Pickle for model loading
+
+## Running the Backend
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Start the backend server:
+
+python main.py
+
+The backend will start a local API service that can be accessed by the frontend dashboard.
+
+## Role in the System
+
+The backend acts as the prediction engine of the system. It connects the trained machine learning models with the user interface and enables real-time pest risk assessment.
